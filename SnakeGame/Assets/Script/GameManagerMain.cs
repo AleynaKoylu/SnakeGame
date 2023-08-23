@@ -7,7 +7,7 @@ public class GameManagerMain : MonoBehaviour
 {
     GameObject music;
     AudioSource mAudioSource;
-    float mVolume = .5f;
+
     float volum;
     [SerializeField]
     Slider audioSlider;
@@ -16,22 +16,46 @@ public class GameManagerMain : MonoBehaviour
     {
         music = GameObject.FindGameObjectWithTag("Music");
         mAudioSource = music.GetComponent<AudioSource>();
+       LoadAudio();
+       
 
     }
 
-    void Update()
+    public void SetAudio( )
     {
         volum = audioSlider.value;
-        mAudioSource.volume = mVolume;
-
+        mAudioSource.volume = volum;
+        if (volum == 0)
+        {
+            mAudioSource.volume = 0;
+        }
+        SaveAuido();
     }
-    public void SetAudio()
+    void SaveAuido()
     {
-        mVolume = volum;
+        PlayerPrefs.SetFloat("AudioS", mAudioSource.volume);
     }
+   public void LoadAudio()
+    {
+        if (PlayerPrefs.HasKey("AudioS"))
+        {
+           mAudioSource.volume = PlayerPrefs.GetFloat("AudioS");
+            audioSlider.value = PlayerPrefs.GetFloat("AudioS");
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("AudioS", .3f);
+            mAudioSource.volume = PlayerPrefs.GetFloat("AudioS");
+            audioSlider.value = PlayerPrefs.GetFloat("AudioS");
+        }
+    }
+   
+
+
     public void  SceneLoad()
     {
         SceneManager.LoadScene(1);
+        Time.timeScale = 1;
     }
     public void QuitApp()
     {

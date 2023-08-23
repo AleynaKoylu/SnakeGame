@@ -15,26 +15,35 @@ public class Head : MonoBehaviour
     public float speed;
 
     [SerializeField]
-    TextMeshProUGUI ScoreTxt;
-    int score = 0;
+    GameManager gameManager;
+
+    [SerializeField]
+    GameObject GameOverPanel;
+
+   
 
     void Start()
     {
 
-        for (int i = 0; i < 5 ; i++)
+        for (int i = 0; i < 2 ; i++)
         {
-            GameObject newTail = Instantiate(Tail, transform.position, Quaternion.identity);
-            Tails.Add(newTail);
+            NewTail();
         }
         InvokeRepeating("Movement", 0, 0.1f);
     }
 
 
-   
+   void NewTail()
+    {
+        GameObject newTail = Instantiate(Tail, transform.position, Quaternion.identity);
+        Tails.Add(newTail);
+      
+    }
     void Movement()
     {
         oldTransform = transform.position;
-        transform.Translate(0, 0, speed * Time.deltaTime);
+        transform.Translate(0, 0, gameManager.speedS * Time.deltaTime);
+        
         FollowHead();
         
     }
@@ -54,8 +63,13 @@ public class Head : MonoBehaviour
         if (other.gameObject.CompareTag("Tomato"))
         {
             other.gameObject.SetActive(false);
-            score += 10;
-            ScoreTxt.text = "Score: " + score;
+            gameManager.Score();
+            NewTail();
+        }
+        if (other.gameObject.CompareTag("Tail")||other.gameObject.CompareTag("Wall"))
+        {
+            gameManager.TimeStats(0);
+            GameOverPanel.SetActive(true);
         }
     }
 }

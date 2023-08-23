@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,50 +11,84 @@ public class GameManager : MonoBehaviour
     Head head;
     [SerializeField]
     Slider speedSlider;
+
+    public float speedS;
+    int score = 0;
+    int hScore;
     [SerializeField]
-    Slider audioSlider;
-    GameObject music;
-    AudioSource mAudioSource;
-    float mVolume = .5f;
-    float volum;
-    float speedS;
-    float speedH=15f;
+    TextMeshProUGUI ScoreTxt;
+    [SerializeField]
+    TextMeshProUGUI HighScoreTxt;
+    [SerializeField]
+    TextMeshProUGUI scoreTxt;
+   
+
 
     private void Start()
     {
-        music = GameObject.FindGameObjectWithTag("Music");
-        mAudioSource = music.GetComponent<AudioSource>();
+      
+        LoadSpeed();
+        
 
+    }
+    
+    public void Score()
+    {
+        hScore = score;
+        score += 10;
+        ScoreTxt.text = "Score: " + score;
+        scoreTxt.text = score.ToString();
+        
+        
+    }
+    public void SaveHighScore()
+    {
+        
+        if (score > PlayerPrefs.GetInt("HighScore"))
+        {
+            hScore = score;
+            PlayerPrefs.SetInt("HighScore", hScore);
+            HighScoreTxt.text = PlayerPrefs.GetInt("HighScore").ToString();
+
+
+        }
+        HighScoreTxt.text = PlayerPrefs.GetInt("HighScore").ToString();
     }
     public void SetSpeed()
     {
-        speedH = speedS;
-    }
-    
-    private void Update()
-    {
-     
-        AudioSlider();
-
         SpeedSlider();
-
+        SaveSpeed();
     }
-   void AudioSlider()
+    void SaveSpeed()
     {
-        volum = audioSlider.value;
-        mAudioSource.volume = mVolume;
-
+        PlayerPrefs.SetFloat("SpeedS", speedSlider.value);
+    }
+    void LoadSpeed()
+    {
+        if (PlayerPrefs.HasKey("SpeedS"))
+        {
+            speedS = PlayerPrefs.GetFloat("SpeedS");
+            speedSlider.value = PlayerPrefs.GetFloat("SpeedS");
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("SpeedS", 15f);
+            speedS = PlayerPrefs.GetFloat("SpeedS");
+            speedSlider.value = PlayerPrefs.GetFloat("SpeedS");
+        }
     }
     void SpeedSlider()
     {
         speedS = speedSlider.value;
-        head.speed = speedH;
 
     }
-    public void SetAudio()
+    private void Update()
     {
-        mVolume = volum;
+     
+        SaveHighScore();
+
     }
+
     public void ActiveButton(GameObject activeGameObject)
     {
         activeGameObject.SetActive(true);
